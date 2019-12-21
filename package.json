@@ -1,0 +1,41 @@
+{
+	"name": "@princessrtfm/ddate",
+	"version": "0.0.0",
+	"description": "Library (and commandline utility) for converting between Erisian dates and boring ones",
+	"main": "ddate.js",
+	"bin": {
+		"ddate": "./ddate.js"
+	},
+	"repository": "PrincessRTFM/node-ddate",
+	"scripts": {
+		"pretest": "eslint . --max-warnings=0",
+		"test": "tap --no-coverage",
+		"release": "np"
+	},
+	"keywords": [
+		"date",
+		"time",
+		"discordian",
+		"calendar"
+	],
+	"author": "Lilith Song <lsong@princessrtfm.com> (https://github.com/PrincessRTFM/)",
+	"license": "Artistic-2.0",
+	"homepage": "https://github.com/PrincessRTFM/node-ddate",
+	"bugs": "https://github.com/PrincessRTFM/node-ddate/issues",
+	"private": true,
+	"dependencies": {
+		"chalk": "^3.0.0",
+		"conf": "^6.2.0",
+		"log-update": "^3.3.0"
+	},
+	"devDependencies": {
+		"eslint": "^6.7.2",
+		"eslint-plugin-eslint-comments": "^3.1.2",
+		"eslint-plugin-import": "^2.18.2",
+		"eslint-plugin-promise": "^4.2.1",
+		"eslint-plugin-sonarjs": "^0.5.0",
+		"eslint-plugin-unicorn": "^14.0.1",
+		"np": "^5.2.1",
+		"tap": "^14.10.2"
+	}
+}
