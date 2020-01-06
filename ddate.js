@@ -423,7 +423,10 @@ else {
 		const arg = args[i];
 		// Manual processing time...
 		if (arg.match(/^-+d(?:ate)?=?/u)) {
-			const [ key, val ] = arg.split('=');
+			const [
+				key,
+				val,
+			] = arg.split('=');
 			if (val) {
 				opts.source = val;
 			}
@@ -436,7 +439,10 @@ else {
 			}
 		}
 		else if (arg.match(/^-+f(?:mt|ormat)?=?/u)) {
-			const [ key, val ] = arg.split('=');
+			const [
+				key,
+				val,
+			] = arg.split('=');
 			if (val) {
 				opts.format = val;
 			}
@@ -461,7 +467,10 @@ else {
 			opts.debug = true;
 		}
 		else if (arg.match(/^-+L(?:ive)?=?/u)) {
-			const [ key, val ] = arg.split('=');
+			const [
+				key,
+				val,
+			] = arg.split('=');
 			let lifetime = 60;
 			if (val) {
 				lifetime = val;
@@ -470,7 +479,10 @@ else {
 				lifetime = args[++i];
 			}
 			if (lifetime) {
-				const [ count, unit ] = String(lifetime)
+				const [
+					count,
+					unit,
+				] = String(lifetime)
 					.match(/^(\d+)\s*([a-z]?)$/ui)
 					.slice(1);
 				switch (unit) {
@@ -496,6 +508,7 @@ else {
 		}
 	}
 	if (opts.help) {
+		/* eslint-disable max-len */
 		console.log([
 			`Usage: ${process.argv[1]} [--format <format>] [--date <date>]`,
 			"--format --fmt -f",
@@ -552,6 +565,7 @@ else {
 			"   `#` will use lowercase",
 			"The first three apply only to numbers, the last two apply only to strings. You can only use one.",
 		].join("\n"));
+		/* eslint-enable max-len */
 	}
 	else if (opts.debug) {
 		const fmt = opts.format
@@ -597,6 +611,9 @@ else {
 		};
 		process.on('SIGHUP', abort);
 		process.on('SIGINT', abort);
+		process.on('SIGPIPE', abort);
+		process.on('SIGTERM', abort);
+		process.on('SIGQUIT', abort);
 	}
 	else {
 		const origin = getOriginDate(opts.source);
