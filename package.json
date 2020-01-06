@@ -22,7 +22,6 @@
 	"license": "Artistic-2.0",
 	"homepage": "https://github.com/PrincessRTFM/node-ddate",
 	"bugs": "https://github.com/PrincessRTFM/node-ddate/issues",
-	"private": true,
 	"dependencies": {
 		"chalk": "^3.0.0",
 		"conf": "^6.2.0",
