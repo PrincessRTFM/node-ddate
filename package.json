@@ -6,6 +6,10 @@
 	"bin": {
 		"ddate": "./ddate.js"
 	},
+	"files": [
+		"ddate.js",
+		"ddate.test.js"
+	],
 	"repository": "PrincessRTFM/node-ddate",
 	"scripts": {
 		"pretest": "eslint . --max-warnings=0",
