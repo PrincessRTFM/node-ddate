@@ -86,7 +86,10 @@ tap.test('internal Date object', async t => {
 });
 tap.test('date conversion', async t => {
 	const fnord = Object.freeze(t.context.fromClone.fnord);
-	const formatted = t.context.fromClone.format('[%A] [%a] [%B] [%b] [%C] [%d] [%j] [%m] [%n] [%t] [%u] [%W] [%y] [%Y]');
+	const formatted = t
+		.context
+		.fromClone
+		.format('[%A] [%a] [%B] [%b] [%C] [%d] [%j] [%m] [%n] [%t] [%u] [%W] [%y] [%Y]');
 	t.is(
 		fnord.year,
 		3185,
