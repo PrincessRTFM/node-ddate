@@ -376,7 +376,6 @@ const config = {
 				name: "err",
 			},
 		],
-		"unicorn/consistent-function-scoping": "warn",
 		"unicorn/custom-error-definition": "error",
 		"unicorn/error-message": "error",
 		"unicorn/escape-case": "warn",
@@ -409,12 +408,6 @@ const config = {
 		"unicorn/prefer-query-selector": "error",
 		"unicorn/no-abusive-eslint-disable": "error",
 		"import/no-unresolved": "error",
-		"import/named": [
-			"error",
-			{
-				commonjs: true,
-			},
-		],
 		"import/no-absolute-path": "error",
 		"import/no-dynamic-require": "warn",
 		"import/no-internal-modules": "warn",
