@@ -187,7 +187,7 @@ function getOriginDate(source) {
 			origin = new Date().getTime() + ONE_DAY;
 			break;
 		case 'today':
-			origin = new Date().getTime();
+			origin = new Date();
 			break;
 		case 'yesterday':
 			origin = new Date().getTime() - ONE_DAY;
@@ -196,10 +196,23 @@ function getOriginDate(source) {
 			if (String(source).match(/^\d+$/u)) {
 				origin = parseInt(source, 10);
 			}
+			else if (String(source).match(/^\d{4}[-\s]\d\d?[-\s]\d\d?$/u)) { // ISO 8601, loosely
+				const [
+					year,
+					month,
+					day,
+				] = String(source)
+					.split(/[-\s]/u)
+					.map(v => parseInt(v, 10));
+				origin = new Date(year, month - 1, day);
+			}
 			break;
 	}
 	if (isNaN(origin)) {
 		origin = new Date();
+	}
+	if (typeof origin == 'number') {
+		origin = new Date(origin);
 	}
 	return origin;
 }
