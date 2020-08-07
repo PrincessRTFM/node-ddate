@@ -273,22 +273,25 @@ class DDate {
 		}
 		// At this point, on a leap year, dayOfYear is (according to the gregorian calendar) one LESS than correct
 		// But we all know St Tibs Day isn't a REAL day
-		let erisianMonth = Math.floor(dayOfYear / 73);
-		let dayOfMonth = dayOfYear % 73;
-		const dayOfWeek = (dayOfYear - 1) % 5;
-		if (erisianMonth == 5) {
-			// This is to fix a bug
-			// Without this, December 31 registers as 06-00
-			// It's something in the math, which works fine for
-			// everything else, so I'm not spending fuck-knows-how-long
-			// trying to figure out the "right" way to deal with it.
-			erisianMonth = 4;
-			dayOfMonth = 73;
-		}
+		dayOfYear--; // It's also 1-indexed, which throws off the calculations.
+		const erisianMonth = Math.floor(dayOfYear / 73);
+		const dayOfMonth = dayOfYear % 73;
+		const dayOfWeek = dayOfYear % 5;
+		/*
+		 * Remember that off-by-one correction for December 31?
+		 * News flash, past me: this is a sign of an off-by-one error that affects EVERY month.
+		 * On the last day of ANY month, it returns "day 00 of <next month>" instead.
+		 * Well, I finally tracked the problem down: JS Date objects are brain-dead. Arguably, so am I.
+		 * SOME of the values are 1-indexed, SOME are 0-indexed. I didn't correct properly.
+		 * And I'd never noticed until August 07, when I saw "00 Bcy" in my ddate line, because it ONLY
+		 * happens on the LAST day of each discordian month.
+		 * The solution was to decrease dayOfYear by one to make it zero-indexed, so that ALL of the calculations
+		 * are. The return object just adds one to the raw numbers to return a one-indexed value for humans.
+		*/
 		const yourDate = {
 			year,
 			month: erisianMonth + 1,
-			day: dayOfMonth,
+			day: dayOfMonth + 1,
 			monthName: MONTHS[erisianMonth],
 			dayName: DAYS_OF_WEEK[dayOfWeek],
 			dayOfWeek: dayOfWeek + 1,

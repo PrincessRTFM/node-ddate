@@ -181,4 +181,58 @@ tap.test('modifying internal date objects', async t => {
 		'string formatting returns the right values'
 	);
 });
+/*
+ * So, I finally found out about an off-by-one error in my calculations that ONLY affects the LAST day of each
+ * erisian month. Long story short, what I thought was an issue only on the last day of the YEAR was actually
+ * caused by inconsistent indexing (some values starting at 0, some at 1) and caused the last day of ANY month
+ * to be converted to "day 00 of <next month>" instead. Of course, after that, the rest of the month was fine.
+ * I only even noticed (because I'd initially thought it only a problem on December 31) when my own terminal's
+ * status line read "PP 00 Bcy" on August 07 (GRE) at which point I finally realised that my math was fuckier
+ * than I thought, removed the monkeypatch for December 31, and tracked down and fixed the actual problem.
+ *
+ * This set of tests is how I did that. It was the proof that the first day of the month and the day BEFORE the
+ * last day of the month acted fine that lead me to the actual issue in the calculations - namely, that JS Date
+ * objects are brain-dead and apparently I wasn't much better. The internal Date objects return some values that
+ * start at 0 (like the month) and some that start at 1 (like the day of the month) and, for some reason, I didn't
+ * actually correct that to all be zero-indexed. I just slapped `- 1` in my calculations, but I missed some places.
+ */
+tap.test('fenceposts', async t => {
+	const mar13 = new DDate('2020-03-13T11:11:11.111Z'); // one (1)
+	const mar14 = new DDate('2020-03-14T11:11:11.111Z');
+	const mar15 = new DDate('2020-03-15T11:11:11.111Z');
+	const aug06 = new DDate('2020-08-06T11:11:11.111Z');
+	const aug07 = new DDate('2020-08-07T11:11:11.111Z');
+	const aug08 = new DDate('2020-08-08T11:11:11.111Z');
+	const format = "[%u:%A] [%m:%B] [%d]";
+	t.is(
+		mar13.format(format),
+		"[2:Boomtime] [1:Chaos] [72]",
+		"March 13 is Boomtime 72 Chaos"
+	);
+	t.is(
+		mar14.format(format),
+		"[3:Pungenday] [1:Chaos] [73]",
+		"March 14 is Pungenday 73 Chaos"
+	);
+	t.is(
+		mar15.format(format),
+		"[4:Prickle-Prickle] [2:Discord] [01]",
+		"March 15 is Prickle-Prickle 01 Discord"
+	);
+	t.is(
+		aug06.format(format),
+		"[3:Pungenday] [3:Confusion] [72]",
+		"August 06 is Prickle-Prickle 72 Confusion"
+	);
+	t.is(
+		aug07.format(format),
+		"[4:Prickle-Prickle] [3:Confusion] [73]",
+		"August 07 is Prickle-Prickle 73 Confusion"
+	);
+	t.is(
+		aug08.format(format),
+		"[5:Setting Orange] [4:Bureaucracy] [01]",
+		"August 08 is Setting Orange 01 Bureaucracy"
+	);
+});
 
