@@ -293,6 +293,7 @@ class DDate {
 			month: erisianMonth + 1,
 			day: dayOfMonth + 1,
 			monthName: MONTHS[erisianMonth],
+			shortMonthName: MONTHS[erisianMonth].replace(/^the\s+/ui, ''),
 			dayName: DAYS_OF_WEEK[dayOfWeek],
 			dayOfWeek: dayOfWeek + 1,
 			tibs: false,
@@ -306,6 +307,8 @@ class DDate {
 			yourDate.dayOfWeek = 0;
 			yourDate.holyDay = false;
 		}
+		yourDate.monthNameAbbrev = ABBREV[yourDate.monthName];
+		yourDate.dayNameAbbrev = ABBREV[yourDate.dayName];
 		return yourDate;
 	}
 	format(fmtString) {

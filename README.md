@@ -96,6 +96,8 @@ If you want a copy of the internal `Date` object, consider calling `.clone()` fi
 
 A magic (getter-only) property to get a generic object describing this Erisian date. Probably not that commonly needed, mostly used internally by the `.format()` method, but the returned object is described below.
 
+Please note that this is NOT cached, and all values are recalculated on each access of `.fnord`. The returned object is mundane, so you may want to cache it yourself instead of using `ddateObject.fnord.<property` over and over with the same base object.
+
 #### `.format(formatString)`
 
 Returns a string representation of this Erisian date, according to the given `formatString`. If no `formatString` is provided, the default defined in your user configuration file is used instead - see the Configuration File section below.
@@ -116,19 +118,27 @@ When reading the `.fnord` property of any `DDate` object, the Erisian date is ca
 - `.month` - the numeric Erisian month, where `1` is Chaos
 - `.day` - the numeric day of the Erisian month
 - `.monthName` - the name of the Erisian month, in Title Case (The Aftermath _does_ include the `The` in the front)
+- `.shortMonthName` - the name of the Erisian month, in Title Case (The Aftermath does _not_ include the `The` in the front, nothing else is changed)
+- `.monthNameAbbrev` - the abbreviated name of the Erisian Month (ex, `Chaos` -> `Chs`)
 - `.dayName` - the name of the Erisian day of the week, in Title Case (Prickle-Prickle includes the `-` and both of the letter `P` are capitalised)
+- `.dayNameAbbrev` - the abbreviation of the Erisian day of the week (ex, `Sweetmorn` -> `SM`)
 - `.dayOfWeek` - the numeric day of the week, where `1` is Sweetmorn
 - `.holyDay` - the name of the current Holy Day (see the `holydays` setting in the Configuration File section for details) if one was found for today, or boolean `false` if it is not a Holy Day
-- `.tibs` - a boolean indicating whether it is St. Tib's Day (if `true`, then: `.day == 59.5`, `.dayName == "St. Tib's Day"`, `.dayOfWeek == 0`, and `.holyDay == false` - St. Tib's Day is not a real day)
+- `.tibs` - a boolean indicating whether it is St. Tib's Day; if `.tibs == true`, then:
+	- `.day == 59.5`
+	- `.dayName == "St. Tib's Day"`
+	- `.dayNameAbbrev == "St Tib"`
+	- `.dayOfWeek == 0` (St. Tib's Day is not a real day)
+	- `.holyDay == false`
 
 ## Format Specifiers
 
 Date formatting uses the (mostly sanely) applicable specifiers from date(1):
 
 - `%A` - full name of weekday (includes `St. Tib's Day`)
-- `%a` - short name of weekday (includes St. Tib's Day as `St Tib's`)
-- `%B` - full name of month
-- `%b` - short name of month
+- `%a` - abbreviated name of weekday (includes St. Tib's Day as `St Tib`)
+- `%B` - full name of month (it is not currently possible to get The Aftermath without the leading `The` - if you know a good format specifier for that, let me know)
+- `%b` - abbreviated name of month
 - `%C` - century
 - `%d` - day of month (always [1, 73])
 - `%D` - identical to `%m/%d/%y`
@@ -143,7 +153,7 @@ Date formatting uses the (mostly sanely) applicable specifiers from date(1):
 - `%u` - day of week, numeric and one-indexed (always [1, 5] - 1 is Sweetmorn)
 - `%W` - day of week, numeric and zero-indexed (always [0, 4] - 0 is Sweetmorn)
 - `%y` - last two digits of the year
-- `%Y` - full year (equivalent to `%C%y` for four-digit years and shorter)
+- `%Y` - full year (equivalent to `%C%y` for four-digit years and shorter; if this is still being used after the year 9999, I will not offer support for this on account of being dead for several millenia by that point)
 
 Additionally, the following new specifiers have been added:
 
