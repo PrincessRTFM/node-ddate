@@ -223,7 +223,7 @@ class DDate {
 	}
 	get thuddite() {
 		if (!(this._thuddite instanceof Date)) {
-			this._thuddite = new Date();
+			this.thuddite = new Date();
 		}
 		return this._thuddite;
 	}
@@ -243,73 +243,103 @@ class DDate {
 		if (!(this._thuddite instanceof Date)) {
 			this._thuddite = new Date();
 		}
+		void this.cached;
 	}
 	get fnord() {
-		// This is where we do... THE MAGICS
-		const thud = this.thuddite;
-		let year = thud.getFullYear();
-		const leapYear = (
-			(year % 100 == 0)
-			&& (year % 400 == 0)
-		)
-		|| (
-			(year % 4 == 0)
-			&& (year % 100 != 0)
-		);
-		year += 1166;
-		let dayOfYear = thud.getDate();
-		const thuddianMonth = thud.getMonth();
-		if (thuddianMonth) {
-			for (let correcting = 0; correcting < thuddianMonth; correcting++) {
-				dayOfYear += DAYS_PER_MONTH[correcting];
-			}
-			if (leapYear && thuddianMonth > 1) { // Have to account for that leap year...
-				dayOfYear++;
-			}
-		}
-		const tibsDay = leapYear && dayOfYear == 60;
-		if (leapYear && dayOfYear > 60) {
-			dayOfYear--;
-		}
-		// At this point, on a leap year, dayOfYear is (according to the gregorian calendar) one LESS than correct
-		// But we all know St Tibs Day isn't a REAL day
-		dayOfYear--; // It's also 1-indexed, which throws off the calculations.
-		const erisianMonth = Math.floor(dayOfYear / 73);
-		const dayOfMonth = dayOfYear % 73;
-		const dayOfWeek = dayOfYear % 5;
-		/*
-		 * Remember that off-by-one correction for December 31?
-		 * News flash, past me: this is a sign of an off-by-one error that affects EVERY month.
-		 * On the last day of ANY month, it returns "day 00 of <next month>" instead.
-		 * Well, I finally tracked the problem down: JS Date objects are brain-dead. Arguably, so am I.
-		 * SOME of the values are 1-indexed, SOME are 0-indexed. I didn't correct properly.
-		 * And I'd never noticed until August 07, when I saw "00 Bcy" in my ddate line, because it ONLY
-		 * happens on the LAST day of each discordian month.
-		 * The solution was to decrease dayOfYear by one to make it zero-indexed, so that ALL of the calculations
-		 * are. The return object just adds one to the raw numbers to return a one-indexed value for humans.
-		*/
-		const yourDate = {
-			year,
-			month: erisianMonth + 1,
-			day: dayOfMonth + 1,
-			monthName: MONTHS[erisianMonth],
-			shortMonthName: MONTHS[erisianMonth].replace(/^the\s+/ui, ''),
-			dayName: DAYS_OF_WEEK[dayOfWeek],
-			dayOfWeek: dayOfWeek + 1,
-			tibs: false,
+		this.cache();
+		return {
+			...this._cache,
 		};
-		const key = `holydays.${yourDate.monthName}.#${yourDate.day}`;
-		yourDate.holyDay = cfg.get(key, false);
-		if (tibsDay) {
-			yourDate.day = 59.5;
-			yourDate.dayName = "St. Tib's Day";
-			yourDate.tibs = true;
-			yourDate.dayOfWeek = 0;
-			yourDate.holyDay = false;
+	}
+	uncache() {
+		this._cache = void 0;
+		this._cached = 0;
+		return this;
+	}
+	cache() {
+		if (!this.cached) {
+			// This is where we do... THE MAGICS
+			const thud = this.thuddite;
+			let year = thud.getFullYear();
+			const leapYear = (
+				(year % 100 == 0)
+				&& (year % 400 == 0)
+			)
+			|| (
+				(year % 4 == 0)
+				&& (year % 100 != 0)
+			);
+			year += 1166;
+			let dayOfYear = thud.getDate();
+			const thuddianMonth = thud.getMonth();
+			if (thuddianMonth) {
+				for (let correcting = 0; correcting < thuddianMonth; correcting++) {
+					dayOfYear += DAYS_PER_MONTH[correcting];
+				}
+				if (leapYear && thuddianMonth > 1) { // Have to account for that leap year...
+					dayOfYear++;
+				}
+			}
+			const tibsDay = leapYear && dayOfYear == 60;
+			if (leapYear && dayOfYear > 60) {
+				dayOfYear--;
+			}
+			// By here, on a leap year, dayOfYear is (according to the gregorian calendar) one LESS than correct
+			// But we all know St Tibs Day isn't a REAL day
+			dayOfYear--; // It's also 1-indexed, which throws off the calculations.
+			const erisianMonth = Math.floor(dayOfYear / 73);
+			const dayOfMonth = dayOfYear % 73;
+			const dayOfWeek = dayOfYear % 5;
+			/*
+			 * Remember that off-by-one correction for December 31?
+			 * News flash, past me: this is a sign of an off-by-one error that affects EVERY month.
+			 * On the last day of ANY month, it returns "day 00 of <next month>" instead.
+			 * Well, I finally tracked the problem down: JS Date objects are brain-dead. Arguably, so am I.
+			 * SOME of the values are 1-indexed, SOME are 0-indexed. I didn't correct properly.
+			 * And I'd never noticed until August 07, when I saw "00 Bcy" in my ddate line, because it ONLY
+			 * happens on the LAST day of each discordian month.
+			 * The solution was to decrease dayOfYear by one to make it zero-indexed, so that ALL the calculations
+			 * are. The return object just adds one to the raw numbers to return a one-indexed value for humans.
+			*/
+			const yourDate = {
+				year,
+				month: erisianMonth + 1,
+				day: dayOfMonth + 1,
+				monthName: MONTHS[erisianMonth],
+				shortMonthName: MONTHS[erisianMonth].replace(/^the\s+/ui, ''),
+				dayName: DAYS_OF_WEEK[dayOfWeek],
+				dayOfWeek: dayOfWeek + 1,
+				tibs: false,
+			};
+			const key = `holydays.${yourDate.monthName}.#${yourDate.day}`;
+			yourDate.holyDay = cfg.get(key, false);
+			if (tibsDay) {
+				yourDate.day = 59.5;
+				yourDate.dayName = "St. Tib's Day";
+				yourDate.tibs = true;
+				yourDate.dayOfWeek = 0;
+				yourDate.holyDay = false;
+			}
+			yourDate.monthNameAbbrev = ABBREV[yourDate.monthName];
+			yourDate.dayNameAbbrev = ABBREV[yourDate.dayName];
+			this._cache = yourDate;
+			this._cached = thud.getTime();
 		}
-		yourDate.monthNameAbbrev = ABBREV[yourDate.monthName];
-		yourDate.dayNameAbbrev = ABBREV[yourDate.dayName];
-		return yourDate;
+		return this;
+	}
+	get cached() {
+		if (typeof this._cache == 'object' && (this._cached || 0) === this.thuddite.getTime()) {
+			return true;
+		}
+		this.uncache();
+		return false;
+	}
+	set cached(cache) {
+		this.uncache();
+		if (cache) {
+			this.cache();
+		}
+		return this;
 	}
 	format(fmtString) {
 		if (fmtString && typeof fmtString != 'string') {

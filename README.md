@@ -96,7 +96,21 @@ If you want a copy of the internal `Date` object, consider calling `.clone()` fi
 
 A magic (getter-only) property to get a generic object describing this Erisian date. Probably not that commonly needed, mostly used internally by the `.format()` method, but the returned object is described below.
 
-Please note that this is NOT cached, and all values are recalculated on each access of `.fnord`. The returned object is mundane, so you may want to cache it yourself instead of using `ddateObject.fnord.<property` over and over with the same base object.
+Please note that this IS cached since v1.2.0. The cache is generated at the last possible moment, and validity is checked by ensuring that it was calculated against a `Date` object representing the same time as the current one, regardless of whether the objects themselves are the same. This means that changing the object to one representing the same time will _not_ make it recalculate (as there is no need), but changing _values_ on the current object _will_ - unless they're changed back before the next cache check.
+
+#### `.cached`
+
+Part of the 1.2.0 Caching Update. This magic getter checks the cache validity (does it exist, and was it generated against a `Date` object representing the same time as the current one) **and will automatically clear the cache if the validity check fails** - anything using this (see below) will wipe the cache if the thuddite date object points to a different time, even if you don't calculate new values at that time.
+
+This is _also_ a magic _setter_, because I could. When setting this value, the old cache is cleared immediately, regardless of the value being "set" at the time. Then, after that, the cache will be forcibly generated _if_ the value being "set" is [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy). That means that setting `obj.cached` to a falsey value sensibly uncaches, and setting it to a truthy one forcibly caches, regardless of whether anything has changed.
+
+#### `.cache()`
+
+Part of the 1.2.0 Caching Update. This method runs the cache validity check (see `.cached` above) and (re)calculates all values _if_ the check fails. If the existing cache is valid, nothing else is done. Additionally, this method returns the `DDate` object it's run on, allowing you to chain it if desired.
+
+#### `.uncache()`
+
+Part of the 1.2.0 Caching Update. This method unconditionally clears the cache. The next cache check will fail, the next conditional calculation will run. Unconditional calculations will, as the name implies, always run. This method also returns the `DDate` object it's run on, allowing chaining - for instance, effectively unconditional cache generation by way of `.uncache().cache()`.
 
 #### `.format(formatString)`
 
@@ -112,7 +126,7 @@ Returns a new `DDate` object, initialised to the same date as the original but w
 
 ### The `.fnord` Property
 
-When reading the `.fnord` property of any `DDate` object, the Erisian date is calculated from the internal representation and an object describing it is returned. The following properties are **guaranteed** to exist.
+When reading the `.fnord` property of any `DDate` object, the Erisian date is calculated from the internal representation and an object describing it is returned. As of the 1.2.0 Caching Update, these values are actually calculated only if they need to be (see `.cached` above) to save on processing. The following properties are **guaranteed** to exist.
 
 - `.year` - the Erisian year
 - `.month` - the numeric Erisian month, where `1` is Chaos
