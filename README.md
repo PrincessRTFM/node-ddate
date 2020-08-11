@@ -30,6 +30,8 @@ At present, the configuration file is managed via the [conf module](https://www.
 
 	Allows you to specify the (anerisian) date to convert. At present, it needs to be a format that `new Date()` will understand, which means that Unix timestamps need to be converted to measure *milli*seconds.
 
+	Alternatively, starting with version 1.1.0 (technically, since commit bd45cbb on 2020-07-20) you can use ISO 8601, which is loosely parsed. It should be the four-digit year, the one-or-two-digit month, and then the one-or-two-digit day; the separator may be a hypen or any (singular) whitespace character.
+
 - `--format` `--fmt` `-f`
 
 	Allows you to specify a particular output format for the Erisian date, according to the Format Specifiers section below.
@@ -45,6 +47,8 @@ At present, the configuration file is managed via the [conf module](https://www.
 - `--Live` `-L`
 
 	Flags for live output, which keeps the script running and updates the output occasionally. You can provide an update delay yourself if you want, as a number followed by a letter: `s` for seconds (the default with no unit), `m` for minutes, and `h` for hours. If you don't provide a delay, the default is every minute. When running in a terminal (STDOUT is a TTY) the update will rewrite itself each time; otherwise the output will be a new line every time.
+
+	The `--date`/`-d` option is ignored when using live update mode, since it wouldn't make any sense. Live update mode recalculates the erisian date every time it updates the output, since not doing that would be pointless and weird.
 
 ## Library Usage
 
