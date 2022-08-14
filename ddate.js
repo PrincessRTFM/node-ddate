@@ -558,7 +558,7 @@ else {
 	}
 	if (opts.help) {
 		/* eslint-disable max-len */
-		console.log([
+		process.stdout.write([
 			`Usage: ${process.argv[1]} [--format <format>] [--date <date>]`,
 			"--format --fmt -f",
 			"       Specify the output format according to the following section",
@@ -613,6 +613,7 @@ else {
 			"   `^` will use uppercase",
 			"   `#` will use lowercase",
 			"The first three apply only to numbers, the last two apply only to strings. You can only use one.",
+			"",
 		].join("\n"));
 		/* eslint-enable max-len */
 	}
@@ -646,7 +647,7 @@ else {
 				cycle(`${output}\n`);
 			}
 			else {
-				console.log(output);
+				process.stdout.write(output);
 			}
 		};
 		const interval = setInterval(display, 1000 * opts.live);
@@ -672,7 +673,7 @@ else {
 			output += `${origin.toLocaleDateString(void 0, cfg.get('localeFormatOptions', {}))} is `;
 		}
 		output += hail.format(opts.format);
-		console.log(output);
+		process.stdout.write(output + (process.stdout.isTTY ? "\n" : ""));
 	}
 }
 
