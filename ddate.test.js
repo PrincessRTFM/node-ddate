@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const tap = require('tap');
 const DDate = require('.');
 
